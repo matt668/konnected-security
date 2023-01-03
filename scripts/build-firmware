@@ -21,7 +21,8 @@ else
 fi
 
 FW_TAG="3.0.0-release_20210201"
-FIRMWARE_OVERLAY_PATH="firmware/nodemcu-firmware-overlay"
+FW_BRANCH="dev-esp32"
+FIRMWARE_OVERLAY_PATH="firmware/esp32"
 LFS_BASE="${PWD}/src/lfs"
 OUTPUT_BASE="${PWD}/build"
 OUTPUT_APP="${OUTPUT_BASE}/app"
@@ -57,14 +58,14 @@ chown -R $USER "${OUTPUT_BASE}"
 # pull and update the FW repo if not already existing
 if [ ! -d "$FW_BASE" ] ; then
     echo "Checking out nodemcu-firmware:${FW_TAG}"
-    git clone --recurse-submodules https://github.com/nodemcu/nodemcu-firmware.git \
+    git clone --branch "${FW_BRANCH}" --recurse-submodules https://github.com/nodemcu/nodemcu-firmware.git \
         "${FW_BASE}"
     # Copy firmware configuration from this repository to the nodemcu-firmware repo
     cp -rf "${FIRMWARE_OVERLAY_PATH}"/* "${FW_BASE}/"
-    rm -f "${FW_BASE}/local/fs/*"
+    #rm -f "${FW_BASE}/local/fs/*"
     cd "${FW_BASE}"
-    git checkout "${FW_TAG}"
-    git submodule update --recursive
+    #git checkout "${FW_TAG}"
+    #git submodule update --recursive
     cd -
 fi
 
@@ -75,7 +76,7 @@ srec_cat -output "${OUTPUT_BASE}/${IMAGE_NAME}.bin" -binary bin/0x00000.bin -bin
 cd -
 
 # Build spiffsimg tool (manual for now because of https://github.com/nodemcu/nodemcu-firmware/issues/2943)
-make -C "${FW_BASE}"/tools/spiffsimg
+#make -C "${FW_BASE}"/tools/spiffsimg
 
 # Build LFS image with application files
 mkdir -p "${OUTPUT_APP}"
